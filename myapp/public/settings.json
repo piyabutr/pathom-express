@@ -1,0 +1,14 @@
+[ 
+	{
+		"from": "second",
+		"to": "bank"
+	},
+	{
+		"from": "third",
+		"to": "li"
+	},
+	{
+		"from": "from",
+		"to": "ที่หนึ่ง"
+	}
+]
