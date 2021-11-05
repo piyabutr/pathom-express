@@ -3,15 +3,23 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  var fname = req.param('fname');
-  var lname = req.param('lname');
-  res.send('Name:' + fname + ' : ' + lname);
+  var fname = req.body.fname;
+    var lname = req.body.lname;
+    if (fname == 'admin' && lname == 'admin') {
+      res.render('index', { title: 'Pathom Converter', loginstyle: 'visibility:hidden;' });
+    } else {
+      res.render('error', { message: 'Permission denied', error: { status: 'Not allowed to access', stack: '' } });
+    }
 });
 
 router.post('/',function(req,res,next){
     var fname = req.body.fname;
     var lname = req.body.lname;
-    res.send('Name:' + fname + ' : ' + lname);
+    if (fname == 'admin' && lname == 'admin') {
+      res.render('index', { title: 'Pathom Converter', loginstyle: 'visibility:hidden;' });
+    } else {
+      res.render('error', { message: 'Permission denied', error: { status: 'Not allowed to access', stack: '' } });
+    }
 });
 
 module.exports = router;
