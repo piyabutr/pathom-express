@@ -8,9 +8,18 @@ var jsontocsv = require('csv-writer');
 var jsonfile = require('jsonfile')
 
 const upload = multer({ dest: './public/data/uploads/' })
+
 router.post('/upload', upload.single('uploaded_file'), function (req, res) {
    console.log(req.file, req.body);
    toJson(req.file);
+   res.write("success");
+});
+
+router.post('/multiupload', upload.array('uploaded_file'), function (req, res) {
+   console.log(req.file, req.body);
+   req.files.map(eachFile => {
+    toJson(eachFile);
+   })
    res.write("success");
 });
 

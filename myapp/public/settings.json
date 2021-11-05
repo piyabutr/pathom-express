@@ -1,14 +1,15 @@
 [ 
 	{
-		"from": "second",
-		"to": "bank"
+		"from": "กำไรเฉลี่ย ราคาขายเฉลี่ย - ต้นทุนเฉลี่ย",
+		"to": "profit"
 	},
 	{
-		"from": "third",
-		"to": "li"
+		"from": "ราคาสุทธิ",
+		"to": "final price"
 	},
 	{
-		"from": "from",
-		"to": "ที่หนึ่ง"
+		"from": "ชื่อสินค้า",
+		"to": "product name"
 	}
+
 ]
