@@ -8,7 +8,7 @@
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
 
-    <div style=<%= loginstyle %> >
+    <% if (!login) { %>
       <form action="/users" method="post">
         <label for="fname">First name:</label>
         <input type="text" id="fname" name="fname"><br><br>
@@ -16,11 +16,12 @@
         <input type="text" id="lname" name="lname"><br><br>
         <input type="submit" value="Submit">
       </form>
-    </div>
-
-    <div style=<%= loginstyle %> >
-      
-    </div>
+    <% } else { %>
+      <form action="/action_page.php">
+        <input type="file" id="myFile" name="filename">
+        <input type="submit">
+      </form>
+    <% } %>
   
   </body>
 </html>
