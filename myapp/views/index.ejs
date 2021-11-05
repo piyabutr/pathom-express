@@ -9,6 +9,7 @@
     <p>Welcome to <%= title %></p>
 
     <% if (!login) { %>
+
       <form action="/users" method="post">
         <label for="fname">First name:</label>
         <input type="text" id="fname" name="fname"><br><br>
@@ -16,11 +17,24 @@
         <input type="text" id="lname" name="lname"><br><br>
         <input type="submit" value="Submit">
       </form>
+
     <% } else { %>
-      <form action="/action_page.php">
-        <input type="file" id="myFile" name="filename">
-        <input type="submit">
+
+
+      <form action="/file/upload" enctype="multipart/form-data" method="post">
+        <div class="form-group">
+          <input type="file" class="form-control-file" name="uploaded_file">
+          <input type="text" class="form-control" placeholder="Number of speakers" name="nspeakers">
+          <input type="submit" value="Get me the stats!" class="btn btn-default">            
+        </div>
       </form>
+<!-- 
+      <form action="/upload">
+        <label for="files">Select files to convert:</label>
+        <input type="file" id="files" name="files" multiple><br><br>
+        <input type="submit">
+      </form> -->
+
     <% } %>
   
   </body>
