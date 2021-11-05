@@ -25,3 +25,4 @@
 - show download button
 - upload new mapping
 - enhance user exp displaying more data
+- deploy on windows server and run as a background service
