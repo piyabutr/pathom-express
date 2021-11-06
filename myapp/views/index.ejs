@@ -20,16 +20,7 @@
 
     <% } else { %>
 
-
-      <!--       
-      <form action="/file/upload" enctype="multipart/form-data" method="post">
-        <div class="form-group">
-          <b>Converting your CSV here (single):</b>
-          <input type="file" class="form-control-file" name="uploaded_file"/>
-          <input type="text" class="form-control" placeholder="Number of speakers" name="nspeakers">
-          <input type="submit" value="Get me the stats!" class="btn btn-default">            
-        </div>
-      </form> -->
+      <% if (upload) { %>
       <br/>
       <br/>
       <form action="/file/upload" enctype="multipart/form-data" method="post">
@@ -50,14 +41,35 @@
       </form>
       <br/>
 
-      <!-- 
-      <form action="/upload">
-        <label for="files">Select files to convert:</label>
-        <input type="file" id="files" name="files" multiple><br><br>
-        <input type="submit">
-      </form> -->
+      <% } %>
+      <% if (download) { %>
+      <form action="/file/download" enctype="multipart/form-data" method="post">
+        <div class="form-group">
+          <label for="fname">Download - <%= filename %>:</label><br>
+          <input type="text" id="fileName" name="fileName" value=<%= filename %>><br>
+          <input type="submit" value="Download">
+        </div>
+      </form>
+      <% } %>
 
     <% } %>
   
   </body>
 </html>
+
+<!--       
+      <form action="/file/upload" enctype="multipart/form-data" method="post">
+        <div class="form-group">
+          <b>Converting your CSV here (single):</b>
+          <input type="file" class="form-control-file" name="uploaded_file"/>
+          <input type="text" class="form-control" placeholder="Number of speakers" name="nspeakers">
+          <input type="submit" value="Get me the stats!" class="btn btn-default">            
+        </div>
+      </form> -->
+
+<!-- 
+      <form action="/upload">
+        <label for="files">Select files to convert:</label>
+        <input type="file" id="files" name="files" multiple><br><br>
+        <input type="submit">
+      </form> -->

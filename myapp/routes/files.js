@@ -7,6 +7,7 @@ var csvtojson = require('csvtojson');
 var jsontocsv = require('csv-writer');
 var jsonfile = require('jsonfile')
 
+var modFileNames = [];
 const upload = multer({ dest: './public/data/uploads/' })
 
 router.post('/upload', upload.single('uploaded_file'), function (req, res) {
@@ -20,7 +21,15 @@ router.post('/multiupload', upload.array('uploaded_file'), function (req, res) {
    req.files.map(eachFile => {
     toJson(eachFile);
    })
-   res.write("success");
+   //TODO pass res along the way and do the below statement at the end on other method
+   console.log('all files for download:'+ modFileNames);
+   res.render('index', { title: 'Pathom Converter', login: true, upload: true, download: true, filename: modFileNames[0] });
+});
+
+router.post('/download', function(req, res){
+    const file = './public/data/uploads/' + req.filename;
+    console.log("download file: " + req.filename);
+    res.download(file); // Set disposition and send it.
 });
 
 // {
@@ -86,14 +95,17 @@ var toCsv = function (json, file, toHeader) {
         }
         headers.push(object)
     })
+    var modFileName = file.originalname.replace('.csv', '-mod.csv')
     var csvWriter = writer({
-        path: file.destination + file.originalname.replace('.csv', '-mod.csv'),
+        path: file.destination + modFileName,
         header: headers
     });
 
     csvWriter.writeRecords(json).then(() => {
-        console.log("job done");
+        modFileNames.push(modFileName)
+        console.log("job done for" + modFileName);
     })
+
 };
 
 module.exports = router;
