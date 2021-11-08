@@ -5,32 +5,28 @@ var multer = require('multer');
 var parse = require('csv-parse');
 var csvtojson = require('csvtojson');
 var jsontocsv = require('csv-writer');
-var jsonfile = require('jsonfile')
+var jsonfile = require('jsonfile');
 
-var modFileNames = [];
 const upload = multer({ dest: './public/data/uploads/' })
 
-router.post('/upload', upload.single('uploaded_file'), function (req, res) {
-   console.log(req.file, req.body);
-   toJson(req.file);
-   res.write("success");
-});
-
 router.post('/multiupload', upload.array('uploaded_file'), function (req, res) {
-   console.log(req.file, req.body);
-   req.files.map(eachFile => {
-    toJson(eachFile);
-   })
+    res.locals.filenames = [];
+   processing(req, res)
    //TODO pass res along the way and do the below statement at the end on other method
-   console.log('all files for download:'+ modFileNames);
-   res.render('index', { title: 'Pathom Converter', login: true, upload: true, download: true, filename: modFileNames[0] });
 });
 
-router.post('/download', function(req, res){
-    const file = './public/data/uploads/' + req.filename;
-    console.log("download file: " + req.filename);
+router.post('/download', function(req, res, next){
+    const file = './public/data/uploads/' + req.body.filename;
+    console.log("download file: "+ req.body.filename);
     res.download(file); // Set disposition and send it.
 });
+
+var processing = function (req, res) {
+   console.log(req.file, req.body);
+   req.files.map(eachFile => {
+    toJson(eachFile, res);
+   })
+}
 
 // {
 //   fieldname: 'uploaded_file',
@@ -43,24 +39,24 @@ router.post('/download', function(req, res){
 //   size: 102
 // }
 
-var toJson = function (file) {
+var toJson = function (file, res) {
     console.log("convert from this file: " + file.path);
     csvtojson().fromFile(file.path).then((jsonObj)=>{
         console.log(jsonObj);
-        readSetting(jsonObj, file);
+        readSetting(jsonObj, file, res);
     });
 };
 
-var readSetting = function (jsonObj, file) {
+var readSetting = function (jsonObj, file, res) {
     var fileLocation = './public/settings.json'
     jsonfile.readFile(fileLocation, function (err, mapping) {
         if (err) console.error(err)
         console.log(mapping)
-        doMapping(jsonObj, file, mapping)
+        doMapping(jsonObj, file, mapping, res)
     });
 };
 
-var doMapping = function (jsonObj, file, mapping) {
+var doMapping = function (jsonObj, file, mapping, res) {
     var fromHeader = mapping.map(x => x.from);
     var toHeader = mapping.map(x => x.to);
 
@@ -76,10 +72,10 @@ var doMapping = function (jsonObj, file, mapping) {
         result.push(object);
     })
 
-    toCsv(result, file, toHeader);
+    toCsv(result, file, toHeader, res);
 };
 
-var toCsv = function (json, file, toHeader) {
+var toCsv = function (json, file, toHeader, res) {
     console.log("convert to csv from: " + json);
     var writer = jsontocsv.createObjectCsvWriter;
     var headers = [];
@@ -102,9 +98,13 @@ var toCsv = function (json, file, toHeader) {
     });
 
     csvWriter.writeRecords(json).then(() => {
-        modFileNames.push(modFileName)
-        console.log("job done for" + modFileName);
+        res.locals.filenames.push(modFileName)
+        res.locals.filename = modFileName;
+        console.log("job done for " + modFileName);
     })
+
+    res.render('index', { title: 'Pathom Converter', login: true, upload: true, download: true });
+
 
 };
 

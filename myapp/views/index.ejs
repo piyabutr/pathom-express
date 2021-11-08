@@ -23,14 +23,6 @@
       <% if (upload) { %>
       <br/>
       <br/>
-      <form action="/file/upload" enctype="multipart/form-data" method="post">
-        <div class="form-group">
-          <b>Converting your CSV here (single):</b>
-          <input type="file" class="form-control-file" name="uploaded_file"/>
-          <input type="submit" style="border-radius: 4px;" value="Upload" class="btn btn-primary">
-        </div>
-      </form>
-      <br/>
 
       <form action="/file/multiupload" enctype="multipart/form-data" method="post">
         <div class="form-group">
@@ -43,13 +35,18 @@
 
       <% } %>
       <% if (download) { %>
-      <form action="/file/download" enctype="multipart/form-data" method="post">
-        <div class="form-group">
-          <label for="fname">Download - <%= filename %>:</label><br>
-          <input type="text" id="fileName" name="fileName" value=<%= filename %>><br>
+
+        <% locals.filenames.forEach(function (file) { %>
+          <p> <%= file %> </p>
+        <% }) %>
+
+      <form action="/file/download" method="post">
+          <label for="filename">Download - <%= locals.filename %>:</label><br>
+          <input type="text" id="filename" name="filename" value='<%= locals.filename %>'>
+          <br>
           <input type="submit" value="Download">
-        </div>
       </form>
+      
       <% } %>
 
     <% } %>
