@@ -20,9 +20,6 @@
 :: npm stop 
 
 #TODO
-- show processing result on screen
-- show error if any input mapping data is missing
-- show download button
 - upload new mapping
 - enhance user exp displaying more data
 - deploy on windows server and run as a background service

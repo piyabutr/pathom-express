@@ -82,13 +82,22 @@ var doMapping = function (jsonObj, file, mapping, res) {
     console.log('toHeader: ' + toHeader)
 
     var result = [];
-    jsonObj.forEach(item => {
+    for(var i = 0; i<jsonObj.length-1; i++) {
+        var item = jsonObj[i];
         var object = {};
         mapping.map(mp => {
             object[mp.to] = item[mp.from]
         })
         result.push(object);
-    })
+    }
+
+    // jsonObj.forEach(item => {
+    //     var object = {};
+    //     mapping.map(mp => {
+    //         object[mp.to] = item[mp.from]
+    //     })
+    //     result.push(object);
+    // })
 
     toCsv(result, file, toHeader, res);
 };
