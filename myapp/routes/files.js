@@ -23,16 +23,27 @@ router.post('/download', function(req, res, next){
 
 var processing = function (req, res) {
    console.log(req.file, req.body);
+   genMappingColumn(res);
    req.files.map(eachFile => {
     toJson(eachFile, res);
-    res.locals.filenames.push(genDownloadFilename(eachFile, res));
+    genDownloadFilename(eachFile, res);
    })
 }
 
 var genDownloadFilename = function (file, res) {
     var modFileName = file.originalname.replace('.csv', '-mod.csv')
     res.locals.filename = modFileName;
-    return modFileName;
+    res.locals.filenames.push(modFileName);
+}
+
+var genMappingColumn = function (res) {
+    var fileLocation = './public/settings.json'
+    jsonfile.readFile(fileLocation, function (err, mapping) {
+        if (err) console.error(err)
+        console.log(mapping)
+        res.locals.mapfrom = mapping.map(x => x.from);
+        res.locals.mapto = mapping.map(x => x.to);
+    });
 }
 
 // {
@@ -108,8 +119,7 @@ var toCsv = function (json, file, toHeader, res) {
         console.log("job done for " + modFileName);
     })
 
-    res.render('index', { title: 'Pathom Converter', login: true, upload: true, download: true });
-
+    res.render('index', { title: 'Patom Converter', login: true, upload: true, download: true });
 
 };
 

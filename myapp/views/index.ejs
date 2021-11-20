@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <h2>Welcome to <%= title %></h2>
 
     <% if (!login) { %>
 
@@ -21,14 +21,32 @@
     <% } else { %>
 
       <% if (upload) { %>
-      <br/>
+      
+      <h2>Mapping table</h2>
+      <% if (locals.mapfrom && locals.mapto) { %>
+        <table style="border: 1px solid black;">
+          <tr>
+            <td>input: </td>
+            <% for (var i = 0; i < locals.mapfrom.length; i++) { %>
+              <td style="border: 1px solid black;"><%= locals.mapfrom[i] %></td>
+            <% } %>
+          </tr>
+          <tr>
+            <td>output: </td>
+            <% for (var i = 0; i < locals.mapto.length; i++) { %>
+              <td style="border: 1px solid black;"><%= locals.mapto[i] %></td>
+            <% } %>
+          </tr>    
+        </table>
+      <% } %>
+
       <br/>
 
       <form action="/file/multiupload" enctype="multipart/form-data" method="post">
         <div class="form-group">
-          <b>Converting your CSV here (multiple):</b>
+          <b>please select input files:</b>
           <input type="file" class="form-control-file" name="uploaded_file" multiple/>
-          <input type="submit" style="border-radius: 4px;" value="Upload" class="btn btn-primary">
+          <input type="submit" style="border-radius: 4px;" value="convert" class="btn btn-primary">
         </div>
       </form>
       <br/>
@@ -42,7 +60,9 @@
           <input type="text" disabled id="filename" name="filename" value='<%= locals.filename %>'>
           <input type="submit" value="Download">
       </form>
- -->    <div>Download output files:</div>
+ -->    
+
+        <div>Download output files:</div>
         <% for (var i = 0; i < locals.filenames.length; i++) { %>
             <div>
               <form action="/file/download" method="post">
@@ -53,7 +73,6 @@
             </div>
         <% } %>
 
-      
       <% } %>
 
     <% } %>
