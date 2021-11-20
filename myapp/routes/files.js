@@ -10,7 +10,7 @@ var jsonfile = require('jsonfile');
 const upload = multer({ dest: './public/data/uploads/' })
 
 router.post('/multiupload', upload.array('uploaded_file'), function (req, res) {
-    res.locals.filenames = [];
+   res.locals.filenames = [];
    processing(req, res)
    //TODO pass res along the way and do the below statement at the end on other method
 });
@@ -25,7 +25,14 @@ var processing = function (req, res) {
    console.log(req.file, req.body);
    req.files.map(eachFile => {
     toJson(eachFile, res);
+    res.locals.filenames.push(genDownloadFilename(eachFile, res));
    })
+}
+
+var genDownloadFilename = function (file, res) {
+    var modFileName = file.originalname.replace('.csv', '-mod.csv')
+    res.locals.filename = modFileName;
+    return modFileName;
 }
 
 // {
@@ -98,8 +105,6 @@ var toCsv = function (json, file, toHeader, res) {
     });
 
     csvWriter.writeRecords(json).then(() => {
-        res.locals.filenames.push(modFileName)
-        res.locals.filename = modFileName;
         console.log("job done for " + modFileName);
     })
 

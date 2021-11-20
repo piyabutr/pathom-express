@@ -36,16 +36,23 @@
       <% } %>
       <% if (download) { %>
 
-        <% locals.filenames.forEach(function (file) { %>
-          <p> <%= file %> </p>
-        <% }) %>
-
-      <form action="/file/download" method="post">
-          <label for="filename">Download - <%= locals.filename %>:</label><br>
-          <input type="text" id="filename" name="filename" value='<%= locals.filename %>'>
-          <br>
+<!--       <form action="/file/download" method="post">
+          <label for="filename">Download output file <%= locals.filename %>:</label>
+          <label for="filename">Download output file:</label>
+          <input type="text" disabled id="filename" name="filename" value='<%= locals.filename %>'>
           <input type="submit" value="Download">
       </form>
+ -->    <div>Download output files:</div>
+        <% for (var i = 0; i < locals.filenames.length; i++) { %>
+            <div>
+              <form action="/file/download" method="post">
+                <!-- <label for="filename">Download output file:</label> -->
+                <input type="text" id="filename" name="filename" value='<%= locals.filenames[i] %>'>
+                <input type="submit" value="Download">
+              </form>
+            </div>
+        <% } %>
+
       
       <% } %>
 
