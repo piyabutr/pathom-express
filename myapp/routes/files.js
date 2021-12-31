@@ -23,10 +23,30 @@ router.post('/download', function(req, res, next){
 
 var processing = function (req, res) {
    console.log(req.file, req.body);
-   genMappingColumn(res);
+   var fileLocations = ['./public/settings_1.json','./public/settings_2.json','./public/settings_3.json']
+   genMappingColumn(req, res, fileLocations);
+}
+
+var genMappingColumn = function (req, res, fileLocations) {
+    res.locals.mapfrom = [];
+    res.locals.mapto = [];
+    var counter = 0;
+    for (var i = 0; i < fileLocations.length; i++) {
+      jsonfile.readFile(fileLocations[i], function (err, mapping, i) {
+        if (err) console.error(err)
+        console.log(mapping)
+        res.locals.mapfrom.push(mapping.map(x => x.from));
+        res.locals.mapto.push(mapping.map(x => x.to));
+        counter ++;
+        if (counter === fileLocations.length) genMappingColumnCompleted(req, res);
+      });
+    }
+}
+
+var genMappingColumnCompleted = function (req, res) {
    req.files.map(eachFile => {
-    toJson(eachFile, res);
-    genDownloadFilename(eachFile, res);
+        toJson(eachFile, res);
+        genDownloadFilename(eachFile, res);
    })
 }
 
@@ -34,16 +54,6 @@ var genDownloadFilename = function (file, res) {
     var modFileName = file.originalname.replace('.csv', '-mod.csv')
     res.locals.filename = modFileName;
     res.locals.filenames.push(modFileName);
-}
-
-var genMappingColumn = function (res) {
-    var fileLocation = './public/settings.json'
-    jsonfile.readFile(fileLocation, function (err, mapping) {
-        if (err) console.error(err)
-        console.log(mapping)
-        res.locals.mapfrom = mapping.map(x => x.from);
-        res.locals.mapto = mapping.map(x => x.to);
-    });
 }
 
 // {
@@ -66,7 +76,7 @@ var toJson = function (file, res) {
 };
 
 var readSetting = function (jsonObj, file, res) {
-    var fileLocation = './public/settings.json'
+    var fileLocation = './public/settings_1.json'
     jsonfile.readFile(fileLocation, function (err, mapping) {
         if (err) console.error(err)
         console.log(mapping)

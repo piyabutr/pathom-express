@@ -21,36 +21,39 @@
     <% } else { %>
 
       <% if (upload) { %>
-      <h2>Mapping table</h2>
-      <% if (locals.mapfrom && locals.mapto) { %>
-        <table style="border: 1px solid black;">
-          <tr>
-            <td>input: </td>
-            <% for (var i = 0; i < locals.mapfrom.length; i++) { %>
-              <td style="border: 1px solid black;"><%= locals.mapfrom[i] %></td>
-            <% } %>
-          </tr>
-          <tr>
-            <td>output: </td>
-            <% for (var i = 0; i < locals.mapto.length; i++) { %>
-              <td style="border: 1px solid black;"><%= locals.mapto[i] %></td>
-            <% } %>
-          </tr>    
-        </table>
-      <% } %>
-      <br/>
-      <form action="/file/multiupload" enctype="multipart/form-data" method="post">
-        <div class="form-group" style="display: flex; flex-direction: column;">
-          <h2>Please select input files (.csv):</h2>
-          <h3>You can drag your files on to the box OR choose from file explorer</h3>
-          <div style="display: flex; flex-direction: row;">
-            <input type="file" style="width: 500px; border-color: dimgrey; border-style: dashed; height: 100px;" class="form-control-file" name="uploaded_file" multiple/>
-            <input type="submit" style="border-radius: 4px; width: fit-content; color: blue; height: 60px;" value="Upload & Process" class="btn btn-primary">
+        <% if (locals.mapfrom && locals.mapto) { %>
+          <% for (var i = 0; i < locals.mapfrom.length; i++) { %>
+            <h2>Mapping table <%= i+1 %></h2>
+                <table style="border: 1px solid black;">
+                  <tr>
+                    <td>input: </td>
+                    <% for (var j = 0; j < locals.mapfrom[i].length; j++) { %>
+                      <td style="border: 1px solid black;"><%= locals.mapfrom[i][j] %></td>
+                    <% } %>
+                  </tr>
+                  <tr>
+                    <td>output: </td>
+                    <% for (var k = 0; k < locals.mapto[i].length; k++) { %>
+                      <td style="border: 1px solid black;"><%= locals.mapto[i][k] %></td>
+                    <% } %>
+                  </tr>    
+                </table>
+          <% } %>
+        <% } %>
+        
+        <br/>
+        <form action="/file/multiupload" enctype="multipart/form-data" method="post">
+          <div class="form-group" style="display: flex; flex-direction: column;">
+            <h2>Please select input files (.csv):</h2>
+            <h3>You can drag your files on to the box OR choose from file explorer</h3>
+            <div style="display: flex; flex-direction: row;">
+              <input type="file" style="width: 500px; border-color: dimgrey; border-style: dashed; height: 100px;" class="form-control-file" name="uploaded_file" multiple/>
+              <input type="submit" style="border-radius: 4px; width: fit-content; color: blue; height: 60px;" value="Upload & Process" class="btn btn-primary">
+            </div>
           </div>
-        </div>
-      </form>
-      <br/>
-      <% } %>
+        </form>
+        <br/>
+        <% } %>
       <% if (download) { %>
 
 <!--       <form action="/file/download" method="post">

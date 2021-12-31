@@ -8,7 +8,8 @@ router.get('/', function(req, res, next) {
     var lname = req.body.lname;
     if (fname == 'admin' && lname == 'admin') {
       isLoggedIn = true;
-      genMappingColumn(res);
+      var fileLocations = ['./public/settings_1.json','./public/settings_2.json','./public/settings_3.json']
+      genMappingColumn(res, fileLocations);
     } else {
       res.render('error', { message: 'Permission denied', error: { status: 'Not allowed to access', stack: '' } });
     }
@@ -19,21 +20,31 @@ router.post('/',function(req,res,next){
     var lname = req.body.lname;
     if (fname == 'admin' && lname == 'admin') {
       isLoggedIn = true;
-      genMappingColumn(res);
+      var fileLocations = ['./public/settings_1.json','./public/settings_2.json','./public/settings_3.json']
+      genMappingColumn(res, fileLocations);
     } else {
       res.render('error', { message: 'Permission denied', error: { status: 'Not allowed to access', stack: '' } });
     }
 });
 
-var genMappingColumn = function (res) {
-    var fileLocation = './public/settings.json'
-    jsonfile.readFile(fileLocation, function (err, mapping) {
+var genMappingColumn = function (res, fileLocations) {
+    res.locals.mapfrom = [];
+    res.locals.mapto = [];
+    var counter = 0;
+    for (var i = 0; i < fileLocations.length; i++) {
+      jsonfile.readFile(fileLocations[i], function (err, mapping, i) {
         if (err) console.error(err)
         console.log(mapping)
-        res.locals.mapfrom = mapping.map(x => x.from);
-        res.locals.mapto = mapping.map(x => x.to);
-        res.render('index', { title: 'Patom Converter', login: isLoggedIn, upload: true, download: false});
-    });
+        res.locals.mapfrom.push(mapping.map(x => x.from));
+        res.locals.mapto.push(mapping.map(x => x.to));
+        counter ++;
+        if (counter === fileLocations.length) genMappingColumnCompleted(res);
+      });
+    }
+}
+
+var genMappingColumnCompleted = function (res) {
+    res.render('index', { title: 'Patom Converter', login: isLoggedIn, upload: true, download: false});
 }
 
 module.exports = router;
