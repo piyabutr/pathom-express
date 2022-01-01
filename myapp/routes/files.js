@@ -23,8 +23,33 @@ router.post('/download', function(req, res, next){
 
 var processing = function (req, res) {
    console.log(req.file, req.body);
-   var fileLocations = ['./public/settings_1.json','./public/settings_2.json','./public/settings_3.json']
-   genMappingColumn(req, res, fileLocations);
+   useSingleMapping(req, res)
+}
+
+
+var useSingleMapping = function (req, res) {
+    var fileLocation = './public/settings.json';
+    res.locals.mapfrom = [];
+    res.locals.mapto = [];
+    res.locals.naming = [];
+
+    jsonfile.readFile(fileLocation, function (err, mapping, i) {
+      if (err) console.error(err)
+      console.log(mapping)
+      res.locals.naming.push(mapping["one"]["name"]);
+      res.locals.mapfrom.push(mapping["one"]["mapping"].map(x => x.from));
+      res.locals.mapto.push(mapping["one"]["mapping"].map(x => x.to));
+
+      res.locals.naming.push(mapping["two"]["name"]);
+      res.locals.mapfrom.push(mapping["two"]["mapping"].map(x => x.from));
+      res.locals.mapto.push(mapping["two"]["mapping"].map(x => x.to));
+
+      res.locals.naming.push(mapping["three"]["name"]);
+      res.locals.mapfrom.push(mapping["three"]["mapping"].map(x => x.from));
+      res.locals.mapto.push(mapping["three"]["mapping"].map(x => x.to));
+  
+      genMappingColumnCompleted(req, res);
+    });  
 }
 
 var genMappingColumn = function (req, res, fileLocations) {
@@ -51,9 +76,11 @@ var genMappingColumnCompleted = function (req, res) {
 }
 
 var genDownloadFilename = function (file, res) {
-    var modFileName = file.originalname.replace('.csv', '-mod.csv')
-    res.locals.filename = modFileName;
-    res.locals.filenames.push(modFileName);
+    for (var i = 0; i < res.locals.naming.length; i++) {
+        var modExt = '-' + res.locals.naming[i] + '-mod.csv';
+        var modFileName = file.originalname.replace('.csv', modExt)
+        res.locals.filenames.push(modFileName);
+    }
 }
 
 // {
@@ -76,7 +103,7 @@ var toJson = function (file, res) {
 };
 
 var readSetting = function (jsonObj, file, res) {
-    var fileLocation = './public/settings_1.json'
+    var fileLocation = './public/settings.json'
     jsonfile.readFile(fileLocation, function (err, mapping) {
         if (err) console.error(err)
         console.log(mapping)
@@ -85,61 +112,93 @@ var readSetting = function (jsonObj, file, res) {
 };
 
 var doMapping = function (jsonObj, file, mapping, res) {
-    var fromHeader = mapping.map(x => x.from);
-    var toHeader = mapping.map(x => x.to);
 
-    console.log('fromHeader: ' + fromHeader)
-    console.log('toHeader: ' + toHeader)
+    var fileLocation = './public/settings.json';
+    var mapfrom = [];
+    var mapto = [];
+    var naming = [];
+    var maps = [];
+    var results = [];
+    var fileNames = [];
 
-    var result = [];
-    for(var i = 0; i<jsonObj.length-1; i++) {
-        var item = jsonObj[i];
-        var object = {};
-        mapping.map(mp => {
-            object[mp.to] = item[mp.from]
-        })
-        result.push(object);
-    }
+    jsonfile.readFile(fileLocation, function (err, mapping, i) {
+      if (err) console.error(err)
+      console.log(mapping)
+      naming.push(mapping["one"]["name"]);
+      mapfrom.push(mapping["one"]["mapping"].map(x => x.from));
+      mapto.push(mapping["one"]["mapping"].map(x => x.to));
+      maps.push(mapping["one"]["mapping"]);
 
-    // jsonObj.forEach(item => {
-    //     var object = {};
-    //     mapping.map(mp => {
-    //         object[mp.to] = item[mp.from]
-    //     })
-    //     result.push(object);
-    // })
+      naming.push(mapping["two"]["name"]);
+      mapfrom.push(mapping["two"]["mapping"].map(x => x.from));
+      mapto.push(mapping["two"]["mapping"].map(x => x.to));
+      maps.push(mapping["two"]["mapping"]);
 
-    toCsv(result, file, toHeader, res);
+      naming.push(mapping["three"]["name"]);
+      mapfrom.push(mapping["three"]["mapping"].map(x => x.from));
+      mapto.push(mapping["three"]["mapping"].map(x => x.to));
+      maps.push(mapping["three"]["mapping"]);
+
+
+      for(var i = 0; i<naming.length-1; i++) {
+        var fromHeader = mapfrom[i];
+        var toHeader = mapto[i];
+        console.log('fromHeader: ' + fromHeader)
+        console.log('toHeader: ' + toHeader)
+
+        for(var j = 0; j<jsonObj.length-1; j++) {
+            var item = jsonObj[j];
+            var object = {};
+            maps[i].map(mp => {
+                object[mp.to] = item[mp.from]
+            })
+        }
+        results.push(object);
+      }
+
+      for (var i = 0; i < naming.length; i++) {
+        var modExt = '-' + naming[i] + '-mod.csv';
+        var modFileName = file.originalname.replace('.csv', modExt)
+        fileNames.push(modFileName);
+      }
+
+      toCsv(results, fileNames, file, mapto, res);
+
+    });  
 };
 
-var toCsv = function (json, file, toHeader, res) {
-    console.log("convert to csv from: " + json);
+var toCsv = function (json, fileNames, file, toHeaders, res) {
     var writer = jsontocsv.createObjectCsvWriter;
-    var headers = [];
-    // header format
-    // [
-    //     {id: 'li', title: 'li'},
-    //     {id: 'bank', title: 'bank'}
-    // ]
-    toHeader.map(x => {
-        var object = {
-            id: x,
-            title: x
+    
+    for (var i = 0; i < fileNames.length; i++) {
+        console.log("convert to csv from: " + json[i]);
+        var headers = [];
+        // header format
+        // [
+        //     {id: 'li', title: 'li'},
+        //     {id: 'bank', title: 'bank'}
+        // ]
+        toHeaders[i].map(x => {
+            var object = {
+                id: x,
+                title: x
+            }
+            headers.push(object)
+        })
+        var modFileName = fileNames[i];
+        var csvWriter = writer({
+            path: file.destination + modFileName,
+            header: headers
+        });
+
+        csvWriter.writeRecords(json).then(() => {
+            console.log("job done for " + modFileName);
+        })
+
+        if (i === fileNames.length-1) {
+            res.render('index', { title: 'Patom Converter', login: true, upload: true, download: true });
         }
-        headers.push(object)
-    })
-    var modFileName = file.originalname.replace('.csv', '-mod.csv')
-    var csvWriter = writer({
-        path: file.destination + modFileName,
-        header: headers
-    });
-
-    csvWriter.writeRecords(json).then(() => {
-        console.log("job done for " + modFileName);
-    })
-
-    res.render('index', { title: 'Patom Converter', login: true, upload: true, download: true });
-
+    }
 };
 
 module.exports = router;

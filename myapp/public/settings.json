@@ -1,27 +1,74 @@
-[ 
-	{
-		"from": "รหัสสินค้า",
-		"to": "code"
+{
+	"one": {
+		"name": "CSS",
+		"mapping": [ 
+			{
+				"from": "รหัสสินค้า",
+				"to": "code"
+			},
+			{
+				"from": "ชื่อสินค้า",
+				"to": "product name"
+			},
+			{
+				"from": "กลุ่ม",
+				"to": "product type"
+			}
+		]
 	},
-	{
-		"from": "ชื่อสินค้า",
-		"to": "product name"
+	"two": {
+		"name": "CSD",
+		"mapping": [ 
+			{
+				"from": "รหัสสินค้า",
+				"to": "code"
+			},
+			{
+				"from": "ชื่อสินค้า",
+				"to": "product name"
+			},
+			{
+				"from": "กลุ่ม",
+				"to": "product type"
+			},
+			{
+				"from": "จำนวนการขาย",
+				"to": "quantity"
+			},
+			{
+				"from": "ราคาสุทธิ",
+				"to": "final price (บาท)"
+			}
+		]
 	},
-	{
-		"from": "กลุ่ม",
-		"to": "product type"
-	},
-	{
-		"from": "จำนวนการขาย",
-		"to": "quantity"
-	},
-	{
-		"from": "ราคาสุทธิ",
-		"to": "final price (บาท)"
-	},
-	{
-		"from": "กำไร ยอดรวม - ต้นทุน",
-		"to": "profit"
+	"three": {
+		"name": "ASD",
+		"mapping": [ 
+			{
+				"from": "รหัสสินค้า",
+				"to": "code"
+			},
+			{
+				"from": "ชื่อสินค้า",
+				"to": "product name"
+			},
+			{
+				"from": "กลุ่ม",
+				"to": "product type"
+			},
+			{
+				"from": "จำนวนการขาย",
+				"to": "quantity"
+			},
+			{
+				"from": "ราคาสุทธิ",
+				"to": "final price (บาท)"
+			},
+			{
+				"from": "กำไร ยอดรวม - ต้นทุน",
+				"to": "profit"
+			}
+		]
 	}
+}
 
-]

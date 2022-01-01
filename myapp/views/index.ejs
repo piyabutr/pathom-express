@@ -23,7 +23,7 @@
       <% if (upload) { %>
         <% if (locals.mapfrom && locals.mapto) { %>
           <% for (var i = 0; i < locals.mapfrom.length; i++) { %>
-            <h2>Mapping table <%= i+1 %></h2>
+            <h2>Mapping table <%= locals.naming[i] %></h2>
                 <table style="border: 1px solid black;">
                   <tr>
                     <td>input: </td>

@@ -20,12 +20,38 @@ router.post('/',function(req,res,next){
     var lname = req.body.lname;
     if (fname == 'admin' && lname == 'admin') {
       isLoggedIn = true;
-      var fileLocations = ['./public/settings_1.json','./public/settings_2.json','./public/settings_3.json']
-      genMappingColumn(res, fileLocations);
+      useSingleMapping(res);
     } else {
       res.render('error', { message: 'Permission denied', error: { status: 'Not allowed to access', stack: '' } });
     }
 });
+
+var useSingleMapping = function (res) {
+    var fileLocation = './public/settings.json';
+    res.locals.mapfrom = [];
+    res.locals.mapto = [];
+    res.locals.naming = [];
+    
+    jsonfile.readFile(fileLocation, function (err, mapping, i) {
+      if (err) console.error(err)
+      console.log(mapping)
+      
+      res.locals.naming.push(mapping["one"]["name"]);
+      res.locals.mapfrom.push(mapping["one"]["mapping"].map(x => x.from));
+      res.locals.mapto.push(mapping["one"]["mapping"].map(x => x.to));
+
+      res.locals.naming.push(mapping["two"]["name"]);
+      res.locals.mapfrom.push(mapping["two"]["mapping"].map(x => x.from));
+      res.locals.mapto.push(mapping["two"]["mapping"].map(x => x.to));
+
+      res.locals.naming.push(mapping["three"]["name"]);
+      res.locals.mapfrom.push(mapping["three"]["mapping"].map(x => x.from));
+      res.locals.mapto.push(mapping["three"]["mapping"].map(x => x.to));
+  
+      genMappingColumnCompleted(res);
+    });
+    
+}
 
 var genMappingColumn = function (res, fileLocations) {
     res.locals.mapfrom = [];
