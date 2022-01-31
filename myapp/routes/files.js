@@ -96,22 +96,22 @@ var genDownloadFilename = function (file, res) {
 
 var toJson = function (file, res) {
     console.log("convert from this file: " + file.path);
-    csvtojson().fromFile(file.path).then((jsonObj)=>{
-        console.log(jsonObj);
-        readSetting(jsonObj, file, res);
+    csvtojson().fromFile(file.path).then((original_JsonData)=>{
+        console.log(original_JsonData);
+        readSetting(original_JsonData, file, res);
     });
 };
 
-var readSetting = function (jsonObj, file, res) {
+var readSetting = function (original_JsonData, file, res) {
     var fileLocation = './public/settings.json'
-    jsonfile.readFile(fileLocation, function (err, mapping) {
+    jsonfile.readFile(fileLocation, function (err, mapping_JsonData) {
         if (err) console.error(err)
-        console.log(mapping)
-        doMapping(jsonObj, file, mapping, res)
+        console.log(mapping_JsonData)
+        doMapping(original_JsonData, file, mapping_JsonData, res)
     });
 };
 
-var doMapping = function (jsonObj, file, mapping, res) {
+var doMapping = function (original_JsonData, file, mapping, res) {
 
     var fileLocation = './public/settings.json';
     var mapfrom = [];
@@ -121,9 +121,9 @@ var doMapping = function (jsonObj, file, mapping, res) {
     var results = [];
     var fileNames = [];
 
-    jsonfile.readFile(fileLocation, function (err, mapping, i) {
-      if (err) console.error(err)
-      console.log(mapping)
+    console.log("\n =========== \n")
+
+      console.log('This is full mapping: ' + JSON.stringify(mapping))
       naming.push(mapping["one"]["name"]);
       mapfrom.push(mapping["one"]["mapping"].map(x => x.from));
       mapto.push(mapping["one"]["mapping"].map(x => x.to));
@@ -139,40 +139,73 @@ var doMapping = function (jsonObj, file, mapping, res) {
       mapto.push(mapping["three"]["mapping"].map(x => x.to));
       maps.push(mapping["three"]["mapping"]);
 
-
+console.log("\n =========== \n")
+      //for printing
       for(var i = 0; i<naming.length-1; i++) {
         var fromHeader = mapfrom[i];
         var toHeader = mapto[i];
-        console.log('fromHeader: ' + fromHeader)
-        console.log('toHeader: ' + toHeader)
-
-        for(var j = 0; j<jsonObj.length-1; j++) {
-            var item = jsonObj[j];
-            var object = {};
-            maps[i].map(mp => {
-                object[mp.to] = item[mp.from]
-            })
-        }
-        results.push(object);
+        console.log('For this mapping name: ' + naming[i])
+        console.log('start mapping columns from Headers: ' + JSON.stringify(fromHeader))
+        console.log('start mapping columns to Headers: ' + JSON.stringify(toHeader))
       }
 
-      for (var i = 0; i < naming.length; i++) {
+console.log("\n =========== \n")
+
+
+    var results_one = [];
+    var results_two = [];
+    var results_three = [];
+
+    for(var j = 0; j<original_JsonData.length-1; j++) {
+        var item = original_JsonData[j];
+
+        var result_one = {};
+        result_one['LineNo'] = j + 1;
+        maps[0].map(mp => {
+            result_one[mp.to] = item[mp.from] ??= 0
+        })
+        results_one.push(result_one);
+
+        var result_two = {};
+        result_two['LineNo'] = j + 1;
+        maps[1].map(mp => {
+            result_two[mp.to] = item[mp.from] ??= 0
+        })
+        results_two.push(result_two);
+        
+        var result_three = {};
+        result_three['LineNo'] = j + 1;
+        maps[2].map(mp => {
+            result_three[mp.to] = item[mp.from] ??= 0
+        })
+        results_three.push(result_three);
+
+        console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_one));
+        console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_two));
+        console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_three));
+        console.log('\n');
+    }    
+
+    results.push(results_one);
+    results.push(results_two);
+    results.push(results_three);
+
+    for (var i = 0; i < naming.length; i++) {
         var modExt = '-' + naming[i] + '-mod.csv';
         var modFileName = file.originalname.replace('.csv', modExt)
         fileNames.push(modFileName);
-      }
+    }
 
-      toCsv(results, fileNames, file, mapto, res);
+    toCsv(results, fileNames, file, mapto, res);
 
-    });  
 };
 
 var toCsv = function (json, fileNames, file, toHeaders, res) {
     var writer = jsontocsv.createObjectCsvWriter;
     
     for (var i = 0; i < fileNames.length; i++) {
-        console.log("convert to csv from: " + json[i]);
-        var headers = [];
+        console.log("\n convert to csv from: " + JSON.stringify(json[i]));
+        var headers = [ {id: 'LineNo', title: 'LineNo'} ];
         // header format
         // [
         //     {id: 'li', title: 'li'},
@@ -191,7 +224,7 @@ var toCsv = function (json, fileNames, file, toHeaders, res) {
             header: headers
         });
 
-        csvWriter.writeRecords(json).then(() => {
+        csvWriter.writeRecords(json[i]).then(() => {
             console.log("job done for " + modFileName);
         })
 
