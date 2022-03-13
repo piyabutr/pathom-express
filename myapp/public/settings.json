@@ -4,7 +4,7 @@
 		"mapping": [ 
 			{
 				"to": "Department",
-				"from": "Wait for POS data"
+				"from": "กลุ่ม"
 			},
 			{
 				"to": "DepartmentDesc1",
@@ -58,7 +58,7 @@
 			},
 			{
 				"to": "Department",
-				"from": "Wait for POS data"
+				"from": "กลุ่ม"
 			},
 			{
 				"to": "Void",
