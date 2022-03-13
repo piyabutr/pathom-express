@@ -1,3 +1,9 @@
+# start 
+## install node.js
+## make sure npm is working on command line or terminal
+## go to "pathom-express/myapp" folder
+## run "npm start"
+
 # pathom-express
 : npm install -g express-generator
 : express --view=ejs myapp
