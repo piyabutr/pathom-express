@@ -17,12 +17,12 @@ router.post('/multiupload', upload.array('uploaded_file'), function (req, res) {
 
 router.post('/download', function(req, res, next){
     const file = './public/data/uploads/' + req.body.filename;
-    console.log("download file: "+ req.body.filename);
+    // console.log("download file: "+ req.body.filename);
     res.download(file); // Set disposition and send it.
 });
 
 var processing = function (req, res) {
-   console.log(req.file, req.body);
+   // console.log(req.file, req.body);
    useSingleMapping(req, res)
 }
 
@@ -35,7 +35,7 @@ var useSingleMapping = function (req, res) {
 
     jsonfile.readFile(fileLocation, function (err, mapping, i) {
       if (err) console.error(err)
-      console.log(mapping)
+      // console.log(mapping)
       res.locals.naming.push(mapping["one"]["name"]);
       res.locals.mapfrom.push(mapping["one"]["mapping"].map(x => x.from));
       res.locals.mapto.push(mapping["one"]["mapping"].map(x => x.to));
@@ -59,7 +59,7 @@ var genMappingColumn = function (req, res, fileLocations) {
     for (var i = 0; i < fileLocations.length; i++) {
       jsonfile.readFile(fileLocations[i], function (err, mapping, i) {
         if (err) console.error(err)
-        console.log(mapping)
+        // console.log(mapping)
         res.locals.mapfrom.push(mapping.map(x => x.from));
         res.locals.mapto.push(mapping.map(x => x.to));
         counter ++;
@@ -95,9 +95,9 @@ var genDownloadFilename = function (file, res) {
 // }
 
 var toJson = function (file, res) {
-    console.log("convert from this file: " + file.path);
+    // console.log("convert from this file: " + file.path);
     csvtojson().fromFile(file.path).then((original_JsonData)=>{
-        console.log(original_JsonData);
+        // console.log(original_JsonData);
         readSetting(original_JsonData, file, res);
     });
 };
@@ -106,7 +106,7 @@ var readSetting = function (original_JsonData, file, res) {
     var fileLocation = './public/settings.json'
     jsonfile.readFile(fileLocation, function (err, mapping_JsonData) {
         if (err) console.error(err)
-        console.log(mapping_JsonData)
+        // console.log(mapping_JsonData)
         doMapping(original_JsonData, file, mapping_JsonData, res)
     });
 };
@@ -121,9 +121,9 @@ var doMapping = function (original_JsonData, file, mapping, res) {
     var results = [];
     var fileNames = [];
 
-    console.log("\n =========== \n")
+    //console.log("\n =========== \n")
 
-      console.log('This is full mapping: ' + JSON.stringify(mapping))
+     // console.log('This is full mapping: ' + JSON.stringify(mapping))
       naming.push(mapping["one"]["name"]);
       mapfrom.push(mapping["one"]["mapping"].map(x => x.from));
       mapto.push(mapping["one"]["mapping"].map(x => x.to));
@@ -139,17 +139,17 @@ var doMapping = function (original_JsonData, file, mapping, res) {
       mapto.push(mapping["three"]["mapping"].map(x => x.to));
       maps.push(mapping["three"]["mapping"]);
 
-console.log("\n =========== \n")
+//console.log("\n =========== \n")
       //for printing
       for(var i = 0; i<naming.length-1; i++) {
         var fromHeader = mapfrom[i];
         var toHeader = mapto[i];
-        console.log('For this mapping name: ' + naming[i])
-        console.log('start mapping columns from Headers: ' + JSON.stringify(fromHeader))
-        console.log('start mapping columns to Headers: ' + JSON.stringify(toHeader))
+  //      console.log('For this mapping name: ' + naming[i])
+  //      console.log('start mapping columns from Headers: ' + JSON.stringify(fromHeader))
+  //      console.log('start mapping columns to Headers: ' + JSON.stringify(toHeader))
       }
 
-console.log("\n =========== \n")
+//console.log("\n =========== \n")
 
 
     var results_one = [];
@@ -180,10 +180,10 @@ console.log("\n =========== \n")
         })
         results_three.push(result_three);
 
-        console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_one));
-        console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_two));
-        console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_three));
-        console.log('\n');
+        // console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_one));
+        // console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_two));
+        // console.log('Result mapping line: ' + j + ', Mapping: ' + JSON.stringify(results_three));
+        // console.log('\n');
     }    
 
     results.push(results_one);
@@ -204,7 +204,7 @@ var toCsv = function (json, fileNames, file, toHeaders, res) {
     var writer = jsontocsv.createObjectCsvWriter;
     
     for (var i = 0; i < fileNames.length; i++) {
-        console.log("\n convert to csv from: " + JSON.stringify(json[i]));
+        // console.log("\n convert to csv from: " + JSON.stringify(json[i]));
         var headers = [ {id: 'LineNo', title: 'LineNo'} ];
         // header format
         // [
@@ -221,7 +221,8 @@ var toCsv = function (json, fileNames, file, toHeaders, res) {
         var modFileName = fileNames[i];
         var csvWriter = writer({
             path: file.destination + modFileName,
-            header: headers
+            header: headers,
+            encoding: "ASCII"
         });
 
         csvWriter.writeRecords(json[i]).then(() => {
