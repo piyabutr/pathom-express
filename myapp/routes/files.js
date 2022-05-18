@@ -221,8 +221,7 @@ var toCsv = function (json, fileNames, file, toHeaders, res) {
         var modFileName = fileNames[i];
         var csvWriter = writer({
             path: file.destination + modFileName,
-            header: headers,
-            encoding: "ASCII"
+            header: headers
         });
 
         csvWriter.writeRecords(json[i]).then(() => {
